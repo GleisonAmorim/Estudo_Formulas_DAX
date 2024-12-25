@@ -1,0 +1,192 @@
+Medidas Criadas
+Percentual de Viagens no Prazo
+Calcula o percentual de viagens entregues no prazo:
+
+
+
+%ViagensNoPrazo = [Viagens no prazo] / [QtdViagens]
+Explicação: Como as medidas [Viagens no prazo] e [QtdViagens] já foram criadas, foi necessário apenas dividir os valores para obter o percentual.
+
+Média de Receita por Viagem
+Calcula a média do valor líquido do frete por viagem:
+
+
+
+MédiaReceitaPorViagem = 
+    AVERAGE(BaseTransporte[Valor do Frete Líquido])
+Explicação: A função AVERAGE calcula a média dos valores na coluna Valor do Frete Líquido.
+
+Quantidade de Estados (UFs)
+Conta quantos estados (UFs) diferentes aparecem na base:
+
+
+
+QtdUfs = DISTINCTCOUNT(BaseTransporte[UF])
+Explicação: A função DISTINCTCOUNT conta apenas os valores únicos encontrados na coluna UF.
+
+Quantidade Total de Viagens
+Conta o total de viagens registradas na base:
+
+
+                                                                  
+QtdViagens = 
+    COUNTROWS(BaseTransporte)
+Explicação: A função COUNTROWS conta o número total de linhas na tabela BaseTransporte.
+
+Total de Quilômetros Rodados
+Soma o total de quilômetros registrados em todas as viagens:
+
+
+
+TotalKm = SUM(BaseTransporte[Km])
+Explicação: A função SUM soma todos os valores na coluna Km.
+
+Viagens Entregues no Prazo
+Filtra as viagens entregues no prazo e calcula sua quantidade:
+
+
+                                                                  
+Viagens no prazo = 
+    CALCULATE(
+        [QtdViagens], 
+        BaseTransporte[StatusEntrega] = "No prazo"
+    )
+Explicação: A função CALCULATE aplica o filtro BaseTransporte[StatusEntrega] = "No prazo" para contar apenas as viagens entregues dentro do prazo.
+
+Resumo
+Essas medidas ajudam a transformar dados brutos em insights poderosos. Por exemplo, você pode usar o percentual de viagens no prazo para monitorar a eficiência das entregas ou a média de receita por viagem para avaliar o desempenho financeiro. Explore os resultados em visuais do Power BI e veja como os valores mudam dinamicamente com filtros e segmentações!
+
+
+
+
+Funções Iteradoras no Power BI
+As funções iteradoras no Power BI, como SUMX, AVERAGEX, MAXX e outras, calculam valores linha por linha e retornam o resultado final. Elas são úteis quando você precisa aplicar fórmulas em cada linha da tabela antes de realizar um cálculo agregado.
+
+Exemplos de Medidas com Funções Iteradoras
+1. Receita RJ, SP e MG (IN)
+Calcula a média do frete líquido para os estados RJ, SP e MG com entregas no prazo:
+
+                                                                  
+                                                                  
+Receita RJ e SP = 
+    CALCULATE(
+        AVERAGE(BaseTransporte[Valor do Frete Líquido]),
+        BaseTransporte[UF] IN {"RJ", "SP", "MG"},
+        BaseTransporte[StatusEntrega] = "No prazo"
+    )
+Explicação:
+
+IN {"RJ", "SP", "MG"}: Filtra apenas essas UFs.
+AVERAGE: Calcula a média do valor de frete líquido.
+2. Cálculo Personalizado (Soma de Colunas)
+Soma os valores de Combustível, Manutenção e Custos Fixos para cada linha:
+
+                                                                  
+                                                                  
+Calcular (soma) = 
+    SUMX(
+        BaseTransporte,
+        BaseTransporte[Combustível] + 
+        BaseTransporte[Manutenção] + 
+        BaseTransporte[Custos Fixos]
+    )
+Explicação:
+
+SUMX: Itera por cada linha da tabela BaseTransporte e soma os valores das colunas indicadas.
+3. Cálculo com Filtros (CALCULATE)
+Conta as linhas da tabela onde a marca é "Volkswagen":
+
+                                                                  
+                                                                  
+CALCULATE = 
+    CALCULATE(
+        COUNTROWS(BaseTransporte),
+        BaseTransporte[Marca] = "Volkswagen"
+    )
+Explicação:
+
+COUNTROWS: Conta o número de linhas.
+CALCULATE: Aplica o filtro de marca antes de contar as linhas.
+4. Cálculo com Filtros Adicionais
+Conta linhas onde a marca é "Volkswagen", o status de entrega é "Com atraso", e o valor do combustível é arredondado para 17,01:
+
+                                                                  
+                                                                  
+CALCULATE com mais filtros = 
+    CALCULATE(
+        COUNTROWS(BaseTransporte),
+        BaseTransporte[Marca] = "Volkswagen",
+        BaseTransporte[StatusEntrega] = "Com atraso",
+        ROUND(BaseTransporte[Combustível], 2) = 17.01
+    )
+Explicação:
+
+ROUND: Arredonda o valor para 2 casas decimais.
+Cada filtro é aplicado simultaneamente.
+Outros Exemplos com Iteradoras
+Frete Bruto
+Calcula o frete bruto dividindo o valor líquido por 0,8:
+                                                                  
+                                                                  
+FreteBruto = 
+    SUMX(
+        BaseTransporte,
+        BaseTransporte[Valor do Frete Líquido] / 0.8
+    )
+Frete Líquido
+Calcula o frete líquido multiplicando o valor por 0,8:
+                                                                  
+                                                                  
+FreteLiquido = 
+    SUMX(
+        BaseTransporte,
+        BaseTransporte[Valor do Frete Líquido] * 0.8
+    )
+Valor Máximo
+Exibe o maior valor de frete bruto (calculado internamente):
+                                                                  
+                                                                  
+MAXIMO = 
+    MAXX(
+        BaseTransporte,
+        BaseTransporte[Valor do Frete Líquido] / 0.8
+    )
+Média de Custos Fixos
+Calcula a média da soma de custos para cada linha:
+                                                                  
+                                                                  
+Média = 
+    AVERAGEX(
+        BaseTransporte,
+        BaseTransporte[Combustível] + 
+        BaseTransporte[Manutenção] + 
+        BaseTransporte[Custos Fixos]
+    )
+Média de Custo de Combustível
+Calcula a média dos valores da coluna Combustível:
+                                                                  
+                                                                  
+MediaCustoCombustível = 
+    AVERAGEX(
+        BaseTransporte,
+        BaseTransporte[Combustível]
+    )
+Valor Mínimo
+Retorna o menor valor de frete bruto:
+                                                                  
+                                                                  
+mínimo = 
+    MINX(
+        BaseTransporte,
+        BaseTransporte[Valor do Frete Líquido] / 0.8
+    )
+Multiplicar e Arredondar
+Multiplica as milhas por 1.6 e arredonda o resultado:
+                                                                  
+                                                                  
+multiplicar e arredondar = 
+    SUMX(
+        BaseTransporte,
+        ROUND(BaseTransporte[Milhas] * 1.6, 2)
+    )
+Resumo: Essas funções ajudam a realizar cálculos personalizados linha a linha e aplicar filtros para obter os insights que você precisa. Use-as para criar métricas específicas e explorar os dados com maior flexibilidade no Power BI.
